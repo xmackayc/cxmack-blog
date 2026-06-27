@@ -1,0 +1,36 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+import { projects } from '../data/projects';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`Projects — ${SITE_TITLE}`} description="Things I've built or been part of." />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<div class="section-header">
+				<h2>Projects</h2>
+			</div>
+			<ul class="projects-list">
+				{projects.map((project) => (
+					<li class="project-item">
+						<div class="project-item__body">
+							<p class="project-item__name">{project.name}</p>
+							<p class="project-item__desc">{project.description}</p>
+						</div>
+						<a href={project.url} target="_blank" rel="noopener" class="project-item__link">
+							Visit &rarr;
+						</a>
+					</li>
+				))}
+			</ul>
+		</main>
+		<Footer />
+	</body>
+</html>

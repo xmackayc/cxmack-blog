@@ -1,0 +1,34 @@
+---
+interface Props {
+	id: string;
+}
+const { id } = Astro.props;
+---
+
+<div class="strava-embed">
+	<iframe
+		src={`https://www.strava.com/activities/${id}/embed`}
+		width="590"
+		height="405"
+		frameborder="0"
+		scrolling="no"
+		allowtransparency
+		title="Strava activity"
+		loading="lazy"
+	></iframe>
+</div>
+
+<style>
+	.strava-embed {
+		margin: 2.4rem 0;
+		border-radius: var(--border-radius-blocks);
+		overflow: hidden;
+		max-width: 100%;
+	}
+
+	.strava-embed iframe {
+		width: 100%;
+		max-width: 590px;
+		display: block;
+	}
+</style>

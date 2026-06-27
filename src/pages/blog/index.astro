@@ -1,0 +1,71 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Header from '../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`Blog — ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<div class="section-header">
+				<h2>Blog</h2>
+			</div>
+			<ul class="board-grid">
+				{posts.map((post) => (
+					<li class="board-card">
+						<a class="board-card__img-link" href={`/blog/${post.id}/`}>
+							{post.data.heroImage
+								? <Image
+										src={post.data.heroImage}
+										alt={post.data.title}
+										width={720}
+										height={540}
+										class="board-card__img"
+									/>
+								: <div class="board-card__img-placeholder" />
+							}
+							<span class="board-card__date">
+								<FormattedDate date={post.data.pubDate} />
+							</span>
+						</a>
+						<div class="board-card__body">
+							{post.data.tags && post.data.tags.length > 0 && (
+								<div class="board-card__tags">
+									{post.data.tags.map((tag) => (
+										<span class="post-tag">{tag}</span>
+									))}
+								</div>
+							)}
+							<h4 class="board-card__title">
+								<a href={`/blog/${post.id}/`}>{post.data.title}</a>
+							</h4>
+							<p class="board-card__excerpt">{post.data.description}</p>
+						</div>
+					</li>
+				))}
+			</ul>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.board-card__img-placeholder {
+		width: 100%;
+		height: 100%;
+		background-color: var(--color-bg-block);
+	}
+</style>

@@ -1,0 +1,27 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`About — ${SITE_TITLE}`} description="A bit about me." />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<div class="section-header">
+				<h2>About</h2>
+			</div>
+			<div class="article-prose">
+				<p>Hey, I'm Connor — a Systems Engineer from Sydney, Australia.</p>
+				<p>This site is a running log of what I'm working on and what I'm into: engineering, fitness, music, and whatever else is taking up space in my head.</p>
+				<p>If something resonates, feel free to reach out.</p>
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>
