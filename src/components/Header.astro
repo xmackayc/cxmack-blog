@@ -147,11 +147,13 @@ import HeaderLink from './HeaderLink.astro';
 		border-color: var(--color-border--hover);
 	}
 
-	.icon-moon { display: none; }
-	.icon-sun  { display: block; }
+	/* Dark default — show moon */
+	.icon-moon { display: block; }
+	.icon-sun  { display: none; }
 
-	:global([data-theme="dark"]) .icon-moon { display: block; }
-	:global([data-theme="dark"]) .icon-sun  { display: none; }
+	/* Light override — show sun */
+	:global([data-theme="light"]) .icon-moon { display: none; }
+	:global([data-theme="light"]) .icon-sun  { display: block; }
 
 	@media (max-width: 720px) {
 		header {
@@ -173,13 +175,13 @@ import HeaderLink from './HeaderLink.astro';
 <script>
 	const toggle = document.getElementById('theme-toggle');
 	toggle?.addEventListener('click', () => {
-		const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-		if (isDark) {
+		const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+		if (isLight) {
 			document.documentElement.removeAttribute('data-theme');
-			localStorage.setItem('theme', 'light');
-		} else {
-			document.documentElement.setAttribute('data-theme', 'dark');
 			localStorage.setItem('theme', 'dark');
+		} else {
+			document.documentElement.setAttribute('data-theme', 'light');
+			localStorage.setItem('theme', 'light');
 		}
 	});
 </script>

@@ -4,13 +4,33 @@ import { getCollection } from 'astro:content';
 import HeadshotImage from '../assets/headshot.jpeg';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
-const posts = (await getCollection('blog'))
+const allPosts = await getCollection('blog');
+const posts = allPosts
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-	.slice(0, 3);
+	.slice(0, 4);
+
+function relativeTime(date: Date): string {
+	const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+	if (diff < 86400)   return 'today';
+	if (diff < 604800)  return `${Math.floor(diff / 86400)}d ago`;
+	if (diff < 2592000) return `${Math.floor(diff / 604800)}w ago`;
+	return `${Math.floor(diff / 2592000)}mo ago`;
+}
+
+function shortHash(id: string): string {
+	return id.replace(/[^a-z0-9]/g, '').substring(0, 7).padEnd(7, '0');
+}
+
+const weeks = Array.from({ length: 26 }, (_, i) => {
+	const hasPost = allPosts.some(p => {
+		const weeksAgo = Math.floor((Date.now() - p.data.pubDate.getTime()) / 604800000);
+		return weeksAgo === i;
+	});
+	return hasPost ? 2 : Math.random() > 0.85 ? 1 : 0;
+});
 ---
 
 <!doctype html>
@@ -20,64 +40,114 @@ const posts = (await getCollection('blog'))
 	</head>
 	<body>
 		<Header />
-		<main>
-			<div class="identity-block">
-				<Image src={HeadshotImage} alt="Connor" width={96} height={96} class="headshot" />
-				<div class="identity-text">
-					<h1>Hey, I'm Connor.</h1>
-					<p>Systems Engineer. A running log of what I'm into right now.</p>
+
+		<!-- Hero -->
+		<div class="identity-hero">
+			<div class="identity-hero__inner">
+				<div class="identity-hero__prompt">
+					<span style="color:#4ade80">connor</span><span style="color:var(--text-muted)">@mbp</span>
+					<span style="color:#60a5fa"> ~/blog</span>
+					<span style="color:#a78bfa"> (main)</span>
+					<span style="color:var(--text-muted)"> ❯ </span>
+					<span style="color:rgba(255,255,255,0.25)">whoami</span>
+				</div>
+				<div class="identity-hero__row">
+					<div class="identity-hero__avatar-wrap">
+						<div class="identity-hero__avatar-ring"></div>
+						<Image
+							src={HeadshotImage}
+							alt="Connor"
+							width={96}
+							height={96}
+							class="identity-hero__avatar"
+						/>
+						<div class="identity-hero__status-dot"></div>
+					</div>
+					<div class="identity-hero__meta">
+						<h1 class="identity-hero__name">
+							Hey, I'm Connor.<span class="cursor"></span>
+						</h1>
+						<p class="identity-hero__tagline">A systems engineer's running log.</p>
+						<div class="stat-chips">
+							<div class="stat-chip">
+								<span class="stat-chip__icon">✦</span>
+								<span class="stat-chip__count">{allPosts.length}</span>
+								<span>posts</span>
+							</div>
+							<div class="stat-chip">
+								<span class="stat-chip__icon">◈</span>
+								<span class="stat-chip__count">eng · fitness · music</span>
+							</div>
+						</div>
+						<div style="display:flex;align-items:center;gap:1rem">
+							<div class="activity-strip">
+								{weeks.map(level => <div class="activity-cell" data-level={level}></div>)}
+							</div>
+							<span class="activity-strip__label">26w</span>
+						</div>
+					</div>
 				</div>
 			</div>
+		</div>
 
-			<section>
-				<div class="section-header">
-					<h2>Recent posts</h2>
-					<a href="/blog">All posts &rarr;</a>
-				</div>
-				<ul class="board-grid">
-					{posts.map((post) => (
-						<li class="board-card">
-							<a class="board-card__img-link" href={`/blog/${post.id}/`}>
-								{post.data.heroImage
-									? <Image
-											src={post.data.heroImage}
-											alt={post.data.title}
-											width={720}
-											height={540}
-											class="board-card__img"
-										/>
-									: <div class="board-card__img-placeholder" />
-								}
-								<span class="board-card__date">
-									<FormattedDate date={post.data.pubDate} />
-								</span>
-							</a>
-							<div class="board-card__body">
-								{post.data.tags && post.data.tags.length > 0 && (
-									<div class="board-card__tags">
-										{post.data.tags.map((tag) => (
-											<span class="post-tag">{tag}</span>
-										))}
-									</div>
-								)}
-								<h4 class="board-card__title">
-									<a href={`/blog/${post.id}/`}>{post.data.title}</a>
-								</h4>
-								<p class="board-card__excerpt">{post.data.description}</p>
-							</div>
-						</li>
-					))}
-				</ul>
-			</section>
+		<!-- Post grid -->
+		<main>
+			<div class="section-header">
+				<h2>Recent posts</h2>
+				<a href="/blog">All posts →</a>
+			</div>
+			<div class="bento-grid">
+				{posts[0] && (
+					<a href={`/blog/${posts[0].id}/`} class="dev-card bento-7">
+						<div class="dev-card__body">
+							{posts[0].data.tags && <div class="dev-card__tags">{posts[0].data.tags.map(t => <span class="tag">{t}</span>)}</div>}
+							<h3 class="dev-card__title">{posts[0].data.title}</h3>
+							<p class="dev-card__excerpt">{posts[0].data.description}</p>
+						</div>
+						<div class="dev-card__footer">
+							<span class="dev-card__hash">{shortHash(posts[0].id)}</span>
+							<span class="dev-card__sep">·</span>
+							<span class="dev-card__time">{relativeTime(posts[0].data.pubDate)}</span>
+							<span class="dev-card__read">read →</span>
+						</div>
+					</a>
+				)}
+				{posts[1] && (
+					<a href={`/blog/${posts[1].id}/`} class="dev-card bento-5">
+						<div class="dev-card__body">
+							{posts[1].data.tags && <div class="dev-card__tags">{posts[1].data.tags.map(t => <span class="tag">{t}</span>)}</div>}
+							<h3 class="dev-card__title">{posts[1].data.title}</h3>
+							<p class="dev-card__excerpt">{posts[1].data.description}</p>
+						</div>
+						<div class="dev-card__footer">
+							<span class="dev-card__hash">{shortHash(posts[1].id)}</span>
+							<span class="dev-card__sep">·</span>
+							<span class="dev-card__time">{relativeTime(posts[1].data.pubDate)}</span>
+							<span class="dev-card__read">read →</span>
+						</div>
+					</a>
+				)}
+				{posts.slice(2).map(post => (
+					<a href={`/blog/${post.id}/`} class="dev-card bento-4">
+						<div class="dev-card__body">
+							{post.data.tags && <div class="dev-card__tags">{post.data.tags.map(t => <span class="tag">{t}</span>)}</div>}
+							<h3 class="dev-card__title">{post.data.title}</h3>
+							<p class="dev-card__excerpt">{post.data.description}</p>
+						</div>
+						<div class="dev-card__footer">
+							<span class="dev-card__hash">{shortHash(post.id)}</span>
+							<span class="dev-card__sep">·</span>
+							<span class="dev-card__time">{relativeTime(post.data.pubDate)}</span>
+							<span class="dev-card__read">read →</span>
+						</div>
+					</a>
+				))}
+				<a href="/blog" class="dev-card dev-card--ghost bento-4">
+					<span style="font-family:var(--font-mono);font-size:1.2rem;color:rgba(255,255,255,0.2)">all posts →</span>
+				</a>
+			</div>
 		</main>
+
 		<Footer />
 	</body>
 </html>
-
-<style>
-	.board-card__img-placeholder {
-		width: 100%;
-		height: 100%;
-		background-color: var(--color-bg-block);
-	}
-</style>

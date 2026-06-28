@@ -17,31 +17,36 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 	</head>
 	<body>
 		<Header />
-		<main>
-			{heroImage && (
-				<div class="article-hero">
-					<Image src={heroImage} alt={title} width={1200} height={675} />
-				</div>
-			)}
+		<main style="max-width:720px">
+			<a href="/blog" class="article-back">← Blog</a>
+
 			<header class="article-header">
-				<div class="article-meta">
-					<FormattedDate date={pubDate} />
-					{updatedDate && (
-						<span>· Updated <FormattedDate date={updatedDate} /></span>
-					)}
-				</div>
-				<h1>{title}</h1>
 				{tags && tags.length > 0 && (
-					<div class="article-tags">
-						{tags.map((tag) => (
-							<span class="post-tag">{tag}</span>
-						))}
+					<div class="article-header__tags">
+						{tags.map(t => <span class="tag">{t}</span>)}
 					</div>
 				)}
+				<h1 class="article-header__title">{title}</h1>
+				<div class="article-header__meta">
+					<FormattedDate date={pubDate} />
+					{updatedDate && (
+						<>
+							<span style="color:var(--border-strong)">·</span>
+							<span>Updated <FormattedDate date={updatedDate} /></span>
+						</>
+					)}
+				</div>
 			</header>
-			<div class="article-prose">
+
+			{heroImage && (
+				<div class="article-hero">
+					<Image src={heroImage} alt={title} width={1200} height={525} />
+				</div>
+			)}
+
+			<article class="prose">
 				<slot />
-			</div>
+			</article>
 		</main>
 		<Footer />
 	</body>

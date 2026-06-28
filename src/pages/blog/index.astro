@@ -1,15 +1,25 @@
 ---
-import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
 import Header from '../../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+function relativeTime(date: Date): string {
+	const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+	if (diff < 86400)   return 'today';
+	if (diff < 604800)  return `${Math.floor(diff / 86400)}d ago`;
+	if (diff < 2592000) return `${Math.floor(diff / 604800)}w ago`;
+	return `${Math.floor(diff / 2592000)}mo ago`;
+}
+
+function shortHash(id: string): string {
+	return id.replace(/[^a-z0-9]/g, '').substring(0, 7).padEnd(7, '0');
+}
 ---
 
 <!doctype html>
@@ -21,51 +31,26 @@ const posts = (await getCollection('blog')).sort(
 		<Header />
 		<main>
 			<div class="section-header">
-				<h2>Blog</h2>
+				<h2>All posts</h2>
 			</div>
-			<ul class="board-grid">
-				{posts.map((post) => (
-					<li class="board-card">
-						<a class="board-card__img-link" href={`/blog/${post.id}/`}>
-							{post.data.heroImage
-								? <Image
-										src={post.data.heroImage}
-										alt={post.data.title}
-										width={720}
-										height={540}
-										class="board-card__img"
-									/>
-								: <div class="board-card__img-placeholder" />
-							}
-							<span class="board-card__date">
-								<FormattedDate date={post.data.pubDate} />
-							</span>
-						</a>
-						<div class="board-card__body">
-							{post.data.tags && post.data.tags.length > 0 && (
-								<div class="board-card__tags">
-									{post.data.tags.map((tag) => (
-										<span class="post-tag">{tag}</span>
-									))}
-								</div>
-							)}
-							<h4 class="board-card__title">
-								<a href={`/blog/${post.id}/`}>{post.data.title}</a>
-							</h4>
-							<p class="board-card__excerpt">{post.data.description}</p>
+			<div class="bento-grid">
+				{posts.map(post => (
+					<a href={`/blog/${post.id}/`} class="dev-card bento-4">
+						<div class="dev-card__body">
+							{post.data.tags && <div class="dev-card__tags">{post.data.tags.map(t => <span class="tag">{t}</span>)}</div>}
+							<h3 class="dev-card__title">{post.data.title}</h3>
+							<p class="dev-card__excerpt">{post.data.description}</p>
 						</div>
-					</li>
+						<div class="dev-card__footer">
+							<span class="dev-card__hash">{shortHash(post.id)}</span>
+							<span class="dev-card__sep">·</span>
+							<span class="dev-card__time">{relativeTime(post.data.pubDate)}</span>
+							<span class="dev-card__read">read →</span>
+						</div>
+					</a>
 				))}
-			</ul>
+			</div>
 		</main>
 		<Footer />
 	</body>
 </html>
-
-<style>
-	.board-card__img-placeholder {
-		width: 100%;
-		height: 100%;
-		background-color: var(--color-bg-block);
-	}
-</style>
