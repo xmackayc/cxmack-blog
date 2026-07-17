@@ -5,7 +5,26 @@ import HeaderLink from './HeaderLink.astro';
 
 <header>
 	<nav>
-		<a href="/" class="site-title">{SITE_TITLE}</a>
+		<a href="/" class="site-title">
+			<span class="brand-mark" aria-hidden="true">
+				<svg viewBox="0 0 100 100" width="20" height="20">
+					<defs>
+						<linearGradient id="brand-gradient" x1="0" y1="0" x2="1" y2="1">
+							<stop offset="0%" stop-color="#d946ef" />
+							<stop offset="50%" stop-color="#3b82f6" />
+							<stop offset="100%" stop-color="#06b6d4" />
+						</linearGradient>
+					</defs>
+					<rect x="36.33" y="0" width="27.33" height="27.33" rx="6.01" fill="currentColor" />
+					<rect x="72.67" y="0" width="27.33" height="27.33" rx="6.01" fill="currentColor" />
+					<rect x="0" y="36.33" width="27.33" height="27.33" rx="6.01" fill="url(#brand-gradient)" />
+					<rect x="0" y="72.67" width="27.33" height="27.33" rx="6.01" fill="currentColor" />
+					<rect x="36.33" y="72.67" width="27.33" height="27.33" rx="6.01" fill="currentColor" />
+					<rect x="72.67" y="72.67" width="27.33" height="27.33" rx="6.01" fill="currentColor" />
+				</svg>
+			</span>
+			<span class="brand-word">cxmack</span>
+		</a>
 		<div class="internal-links">
 			<HeaderLink href="/">Home</HeaderLink>
 			<HeaderLink href="/blog">Blog</HeaderLink>
@@ -63,8 +82,8 @@ import HeaderLink from './HeaderLink.astro';
 	header {
 		margin: 0;
 		padding: 0 2em;
-		background: var(--color-bg);
-		border-bottom: 1px solid var(--color-border);
+		background: var(--bg);
+		border-bottom: 1px solid var(--border);
 		transition: background-color 0.3s, border-color 0.3s;
 		position: sticky;
 		top: 0;
@@ -79,17 +98,31 @@ import HeaderLink from './HeaderLink.astro';
 	}
 
 	.site-title {
-		font-size: var(--body-M-font-size);
-		font-weight: var(--font-weight-titles);
-		color: var(--color-text);
+		display: inline-flex;
+		align-items: center;
+		gap: 0.8rem;
+		font-family: var(--font-display);
+		font-size: 1.8rem;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		color: var(--text);
 		text-decoration: none;
 		white-space: nowrap;
 		opacity: 1;
 		flex-shrink: 0;
 	}
 
-	.site-title:hover {
-		color: var(--accent-color);
+	.brand-mark {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 30px;
+		height: 30px;
+		border-radius: var(--radius);
+		background: var(--surface-1);
+		border: 1px solid var(--border);
+		color: var(--text-muted);
+		flex-shrink: 0;
 	}
 
 	.internal-links {
@@ -115,16 +148,16 @@ import HeaderLink from './HeaderLink.astro';
 	.social-links a {
 		display: flex;
 		align-items: center;
-		color: var(--color-secondary-foreground);
+		color: var(--text-muted);
 		padding: 6px;
-		border-radius: var(--border-radius-navigation);
+		border-radius: var(--radius);
 		transition: color 0.3s, background-color 0.3s;
 		opacity: 1;
 	}
 
 	.social-links a:hover {
-		color: var(--color-text);
-		background-color: var(--color-cur-nav-page);
+		color: var(--text);
+		background-color: var(--surface-1);
 	}
 
 	.theme-toggle {
@@ -134,17 +167,17 @@ import HeaderLink from './HeaderLink.astro';
 		width: 36px;
 		height: 36px;
 		background: none;
-		border: 1px solid var(--color-border);
-		border-radius: var(--border-radius-navigation);
-		color: var(--color-text);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		color: var(--text);
 		cursor: pointer;
 		transition: background-color 0.3s, border-color 0.3s;
 		flex-shrink: 0;
 	}
 
 	.theme-toggle:hover {
-		background-color: var(--color-cur-nav-page);
-		border-color: var(--color-border--hover);
+		background-color: var(--surface-1);
+		border-color: var(--border-strong);
 	}
 
 	/* Dark default — show moon */

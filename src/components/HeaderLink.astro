@@ -17,17 +17,18 @@ const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
 		display: inline-block;
 		padding: 0.5em 0.75rem;
 		text-decoration: none;
-		color: var(--color-text);
-		font-size: var(--body-S-font-size);
-		border-radius: var(--border-radius-navigation);
+		color: var(--text-muted);
+		font-size: 1.4rem;
+		border-radius: var(--radius);
 		transition: background-color 0.3s, color 0.3s;
 	}
 	a:hover {
-		background-color: var(--color-cur-nav-page);
+		background-color: var(--surface-1);
+		color: var(--text);
 		opacity: 1;
 	}
 	a.active {
-		color: var(--accent-color);
+		color: var(--text);
 		font-weight: 600;
 	}
 </style>
